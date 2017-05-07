@@ -14,14 +14,7 @@ public class GoogleTranslate {
     }
 
     public String translationFor(String input) {
-        Client client = ClientBuilder.newClient();
-
-        WebTarget target = client.target("https://translation.googleapis.com/language/translate/v2?key=" + API_KEY + "&source=en&target=pl&q=" + input);
-        Response response = target.request().get();
-        String value = response.readEntity(String.class);
-        response.close();  // You should close connections!
-
-        return value;
+       return null;
     }
 
 
