@@ -7,7 +7,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public class GoogleTranslateTest {
 
-    final String key = "AIzaSyBde9PPInnRvdcwiMzie1AQLvdxdVZdvoY";
+    final String key = "";
 
     @Test
     public void should_translate_with_google() {
