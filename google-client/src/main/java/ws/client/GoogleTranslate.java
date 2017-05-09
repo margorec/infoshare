@@ -11,7 +11,7 @@ public class GoogleTranslate {
     }
 
     public String translationFor(String input) {
-        throw new NotImplementedException("Not implemented yet");
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
 
