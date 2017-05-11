@@ -1,2 +1,2 @@
 # infoshare
-Code for info share academy trainings
+Code for infoshare academy trainings
