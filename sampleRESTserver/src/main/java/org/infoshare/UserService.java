@@ -6,40 +6,47 @@ import org.infoshare.model.UserStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import java.io.InvalidObjectException;
 import java.util.Collection;
 
-@Path("/")
+@Path("/user")
 public class UserService {
+
+    private Logger LOG = LoggerFactory.getLogger(UserService.class);
 
     @Context
     UriInfo uriinfo;
 
     private UserStore userStore;
-
-    private Logger LOG = LoggerFactory.getLogger(UserService.class);
-
     public UserService() {
         userStore = new UserStore();
     }
 
     @GET
     @Path("/hi/{name}")
-    @Consumes(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response say(@PathParam("name") String name) {
         LOG.info("Saying hello from " + uriinfo.getAbsolutePath());
-        String msg = "Hello, " + name;
-        return Response.ok(msg).build();
+        return Response.ok().entity("getUserById is called, id : ").build();
     }
 
     @GET
-    @Path("/userInfo")
+    @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getUserInfo(@QueryParam("id") Integer id) {
+    public Response getUserInfo(@PathParam("id") Integer id) {
         User user = userStore.getBase().get(id);
         if (user != null) {
             return Response.ok(user).build();
@@ -49,7 +56,7 @@ public class UserService {
     }
 
     @GET
-    @Path("/users")
+    @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUsers() {
         Collection<User> users = userStore.getBase().values();
@@ -61,11 +68,11 @@ public class UserService {
     }
 
     @GET
-    @Path("/userAgent")
+    @Path("/getUserAgent")
     @Produces(MediaType.TEXT_PLAIN)
     public Response getAgent(@HeaderParam("user-agent") String userAgent) {
-        LOG.info("Klient uzywa: " + userAgent);
-        return Response.ok("Używasz przeglądarki:" + userAgent).build();
+        LOG.info("Client is using [" + userAgent + "]");
+        return Response.ok("You are using : [" + userAgent + "]").build();
     }
 
     @POST
@@ -73,19 +80,31 @@ public class UserService {
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.TEXT_PLAIN})
     public Response login(Credentials credentials) {
-        LOG.info("Loguje się user: " + credentials.getName());
+        LOG.info("Login attempt : [" + credentials.getName() + "]");
         return Response.ok("Wszystko poszło ok " + credentials.getName()).build();
     }
 
     @PUT
-    @Path("/user")
+    @Path("/add")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response addUser(User incomingUser) {
-        LOG.info("Adding user:" + incomingUser.toString());
         User user = new User(incomingUser.getName(), incomingUser.getSurname(), null);
         userStore.add(user);
         return Response.ok(userStore.getBase().values()).build();
+    }
+
+    @DELETE
+    @Path("/delete/{id}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response removeUser(@PathParam("id") Integer userId) {
+        try {
+            userStore.remove(userId);
+            return Response.ok("User [" + userId + "] deleted").build();
+        } catch (InvalidObjectException e) {
+            LOG.error(e.getMessage());
+            return Response.serverError().entity(e.getMessage()).build();
+        }
     }
 
 }

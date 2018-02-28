@@ -2,12 +2,10 @@ package org.infoshare.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.io.Serializable;
 import java.util.Random;
 
-/**
- * Created by marcin on 11.05.2017.
- */
-public class User {
+public class User implements Serializable {
 
     private String name;
     private String surname;
